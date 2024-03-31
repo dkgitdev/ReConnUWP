@@ -2,6 +2,8 @@
 
   A quick re-pairing to reconnect gamepads, audio devices and so on.
 
+[Youtube demo](https://youtu.be/2O_KVY61-So)
+
 ### It's not good yet!
 
 ... but it gets job done. 
