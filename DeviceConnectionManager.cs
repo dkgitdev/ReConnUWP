@@ -11,7 +11,7 @@ namespace ReConnUWP
 
 	public class DeviceConnectionManager
 	{
-		DeviceInformationCollection devices;
+		public IObservable<ManagedBluetoothDevice>
 
 		public class DeviceStatuses
 		{
@@ -24,14 +24,16 @@ namespace ReConnUWP
 
 		public async void ConnectByName(string name)
         {
-			await DiscoverPairedDevices();
             DeviceInformation target = devices.Where((DeviceInformation device) => device.Name == name).First();
             await RePairDevice(target);
 		}
 
 		public async Task<string> DiscoverPairedDevices()
 		{
-            // TODO: List Devices
+			// TODO: List Devices
+			if (devices != null)
+				return "Already Scanned!";
+
             DeviceInformationCollection deviceInformationCollection = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelector());
 			this.devices = deviceInformationCollection;
 			return "Scan complete";
@@ -45,8 +47,6 @@ namespace ReConnUWP
 			try
 			{
 				await deviceInformation.Pairing.UnpairAsync();
-/*				DeviceInformationCollection unpaired = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelectorFromPairingState(false));
-				DeviceInformation deviceToPair = unpaired.Where((newDevice) => newDevice.Id == deviceInformation.Id).First();*/
 				await deviceInformation.Pairing.PairAsync();
 				return DeviceStatuses.PAIRED;
 			}
