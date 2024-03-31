@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -22,21 +25,15 @@ namespace ReConnUWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
+
+        ObservableCollection<ManagedBluetoothDevice> devices => dm.Devices;
         private readonly DeviceConnectionManager dm;
+
         public MainPage()
         {
             this.InitializeComponent();
             dm = new DeviceConnectionManager();
-        }
-
-        private void BtnScan_Click(object sender, RoutedEventArgs e)
-        {
-            _ = dm.DiscoverPairedDevices();
-        }
-
-        private void BtnConnect_Click(object sender, RoutedEventArgs e)
-        {
-            dm.ConnectByName("Joy-Con (R)");
+            Task.Run(dm.DiscoverPairedDevices).GetAwaiter().GetResult();
         }
     }
 }

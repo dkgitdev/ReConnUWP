@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,8 @@ namespace ReConnUWP
 
 	public class DeviceConnectionManager
 	{
-		public IObservable<ManagedBluetoothDevice>
+		public ObservableCollection<ManagedBluetoothDevice> Devices = new ObservableCollection<ManagedBluetoothDevice>();
+		bool isDevicesScanned = false;
 
 		public class DeviceStatuses
 		{
@@ -24,36 +26,24 @@ namespace ReConnUWP
 
 		public async void ConnectByName(string name)
         {
-            DeviceInformation target = devices.Where((DeviceInformation device) => device.Name == name).First();
-            await RePairDevice(target);
+			ManagedBluetoothDevice target = Devices.Where((ManagedBluetoothDevice device) => device.Name == name).First();
+            await target.RePairDevice();
 		}
 
 		public async Task<string> DiscoverPairedDevices()
 		{
 			// TODO: List Devices
-			if (devices != null)
+			if (isDevicesScanned)
 				return "Already Scanned!";
 
-            DeviceInformationCollection deviceInformationCollection = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelector());
-			this.devices = deviceInformationCollection;
-			return "Scan complete";
-		}
-
-
-		async Task<string> RePairDevice(DeviceInformation deviceInformation)
-		{
-			// TODO: Connect to Specific device
-			// Should return some interruptable thing
-			try
-			{
-				await deviceInformation.Pairing.UnpairAsync();
-				await deviceInformation.Pairing.PairAsync();
-				return DeviceStatuses.PAIRED;
-			}
-			catch (Exception e)
-			{
-				return $"Error: {e.Message}";
-			}
+            DeviceInformationCollection pairedBluetoothDevices = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelector());
+            IEnumerable<ManagedBluetoothDevice> convertedDevices = pairedBluetoothDevices.Select((device) =>  new ManagedBluetoothDevice(device));
+			foreach (ManagedBluetoothDevice device in convertedDevices)
+            {
+				Devices.Add(device);
+			}	
+			isDevicesScanned = true;
+            return "Scan complete";
 		}
 
 		/*		public async InterruptConnection()

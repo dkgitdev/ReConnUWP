@@ -10,6 +10,15 @@
 
     <StackPanel>
         <TextBlock Text="Devices" FontSize="48"/>
-        <ListView x:Name="lvDevices"/>
+        <ListView ItemsSource="{x:Bind devices, Mode=OneWay}" Height="Auto">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:ManagedBluetoothDevice">
+                    <StackPanel>
+                        <TextBlock Text="{x:Bind Name}" MinHeight="100"/>
+                        <Button x:Name="btnDeviceRePair" Content="Re-Pair" Command="{x:Bind RePairCommandInstance}" CommandParameter="{x:Bind DataContext}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </StackPanel>
 </Page>
